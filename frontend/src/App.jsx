@@ -1,38 +1,42 @@
-import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
-import { Navigate } from "react-router-dom";
-// Import native components
-import { Loader } from "lucide-react";
-import { Toaster } from "react-hot-toast"
-// Import Manual Components
-import Navbar from "./components/Navbar"
-// authStore
-import { useAuthStore } from "./store/useAuthStore";
-// Importing pages from page Folder
+import Navbar from "./components/Navbar";
+
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
-import ProfilePage from "./pages/ProfilePage";
+import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
+import ProfilePage from "./pages/ProfilePage";
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuthStore } from "./store/useAuthStore";
+import { useThemeStore } from "./store/useThemeStore";
+import { useEffect } from "react";
+
+import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore()
+  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
+  const { theme } = useThemeStore();
 
-  // call imediatly as our application loading
+  console.log({ onlineUsers });
+
   useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
+    checkAuth();
+  }, [checkAuth]);
 
-  if (isCheckingAuth && !authUser) {
+  console.log({ authUser });
+
+  if (isCheckingAuth && !authUser)
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
-    )
-  }
+    );
+
   return (
-    <div  data-theme="dark">
+    <div data-theme={theme}>
       <Navbar />
+
       <Routes>
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
         <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
@@ -44,6 +48,5 @@ const App = () => {
       <Toaster />
     </div>
   );
-}
-
+};
 export default App;
